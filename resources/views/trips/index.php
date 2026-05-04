@@ -40,12 +40,14 @@
         </div>
     <?php endif; ?>
 </div>
-<nav class="mt-4">
-    <ul class="pagination">
-        <?php for ($i = 1; $i <= $pages; $i++): ?>
-            <li class="page-item <?= $i === (int) $trips['page'] ? 'active' : '' ?>">
-                <a class="page-link" href="<?= base_url('trips?page=' . $i) ?>"><?= $i ?></a>
-            </li>
-        <?php endfor; ?>
-    </ul>
-</nav>
+<?php if ($pages > 1): ?>
+    <nav class="mt-4">
+        <ul class="pagination">
+            <?php for ($i = 1; $i <= $pages; $i++): ?>
+                <li class="page-item <?= $i === (int) $trips['page'] ? 'active' : '' ?>">
+                    <a class="page-link" href="<?= base_url('trips?page=' . $i) ?>"><?= $i ?></a>
+                </li>
+            <?php endfor; ?>
+        </ul>
+    </nav>
+<?php endif; ?>
