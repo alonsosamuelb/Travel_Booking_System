@@ -1,12 +1,12 @@
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="card card-soft shadow-sm mb-4">
-            <h2 class="section-title h4">Dashboard</h2>
-            <p class="text-muted mb-0">Overview of your reservations and upcoming trips.</p>
+            <h2 class="section-title h4">My account</h2>
+            <p class="text-muted mb-0">Manage your bookings and profile.</p>
         </div>
         <div class="card card-soft shadow-sm mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <h3 class="h5 mb-0">Active reservations</h3>
+                <h3 class="h5 mb-0">Active bookings</h3>
                 <a href="<?= base_url('reservations') ?>" class="btn btn-sm btn-outline-primary">View all</a>
             </div>
             <div class="table-responsive">
@@ -21,7 +21,7 @@
                             <td><span class="badge text-bg-success"><?= htmlspecialchars($reservation['status']) ?></span></td>
                         </tr>
                     <?php endforeach; ?>
-                    <?php if (!$activeReservations): ?><tr><td colspan="4" class="text-muted">No active reservations yet.</td></tr><?php endif; ?>
+                    <?php if (!$activeReservations): ?><tr><td colspan="4" class="text-muted">No active bookings yet.</td></tr><?php endif; ?>
                     </tbody>
                 </table>
             </div>
@@ -40,7 +40,7 @@
                     </div>
                 <?php endforeach; ?>
                 <?php if (!$availableTrips): ?>
-                    <div class="col-12 text-muted">No upcoming trips available.</div>
+                    <div class="col-12 text-muted">No trips available right now.</div>
                 <?php endif; ?>
             </div>
         </div>
@@ -66,7 +66,7 @@
             </div>
         <?php else: ?>
             <div class="card card-soft shadow-sm">
-                <h3 class="h5">Past reservations</h3>
+                <h3 class="h5">Past bookings</h3>
                 <ul class="list-group list-group-flush">
                     <?php foreach ($pastReservations as $reservation): ?>
                         <li class="list-group-item px-0"><?= htmlspecialchars($reservation['trip_name']) ?> <span class="text-muted small d-block"><?= date('d/m/Y H:i', strtotime($reservation['departure_at'])) ?></span></li>

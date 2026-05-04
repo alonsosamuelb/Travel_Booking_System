@@ -25,10 +25,10 @@ $flashError = $_SESSION['_flash']['error'] ?? null;
             </button>
             <div class="collapse navbar-collapse" id="mainNav">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link <?= is_active('/trips') ?>" href="<?= base_url('trips') ?>">Trips</a></li>
+                    <li class="nav-item"><a class="nav-link <?= is_active('/trips') ?>" href="<?= base_url('trips') ?>">Explore</a></li>
                     <?php if ($user): ?>
-                        <li class="nav-item"><a class="nav-link <?= is_active('/reservations') ?>" href="<?= base_url('reservations') ?>">Reservations</a></li>
-                        <li class="nav-item"><a class="nav-link <?= is_active('/dashboard') ?>" href="<?= base_url('dashboard') ?>">Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link <?= is_active('/reservations') ?>" href="<?= base_url('reservations') ?>">My bookings</a></li>
+                        <li class="nav-item"><a class="nav-link <?= is_active('/dashboard') ?>" href="<?= base_url('dashboard') ?>">My account</a></li>
                         <?php if ($user['role'] === 'admin'): ?>
                             <li class="nav-item"><a class="nav-link <?= is_active('/admin') ?>" href="<?= base_url('admin') ?>">Admin</a></li>
                         <?php endif; ?>
@@ -51,25 +51,12 @@ $flashError = $_SESSION['_flash']['error'] ?? null;
     </nav>
 
     <header class="hero-banner">
-        <div class="container py-5">
+        <div class="container hero-inner">
             <div class="row align-items-center g-4">
-                <div class="col-lg-7">
-                    <span class="badge text-bg-light mb-3">Booking platform</span>
-                    <h1 class="display-6 fw-bold mb-3">Manage trips, users and reservations in one place.</h1>
-                    <p class="lead text-white-50 mb-0">A complete booking platform with user and admin access.</p>
-                </div>
-                <div class="col-lg-5">
-                    <div class="hero-card shadow-lg">
-                        <div class="small text-uppercase text-muted mb-2">Modules</div>
-                        <div class="d-flex flex-wrap gap-2">
-                            <span class="chip">Auth + roles</span>
-                            <span class="chip">Trips CRUD</span>
-                            <span class="chip">Reservations</span>
-                            <span class="chip">Administration</span>
-                            <span class="chip">PDF / CSV</span>
-                            <span class="chip">REST API</span>
-                        </div>
-                    </div>
+                <div class="col-lg-8">
+                    <span class="badge text-bg-light mb-3">Travel booking</span>
+                    <h1 class="display-6 fw-bold mb-3">Plan and book your trips easily.</h1>
+                    <p class="lead text-white-50 mb-0">Find, book and manage your trips in seconds.</p>
                 </div>
             </div>
         </div>

@@ -8,13 +8,13 @@ $isAdmin = Auth::isAdmin();
 <div class="card card-soft shadow-sm">
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-3">
         <div>
-            <h2 class="section-title h3 mb-1">My reservations</h2>
-            <p class="text-muted mb-0">View, update or cancel your bookings.</p>
+            <h2 class="section-title h3 mb-1">My bookings</h2>
+            <p class="text-muted mb-0">View and manage your bookings.</p>
         </div>
         <div class="d-flex gap-2">
             <a href="<?= base_url('exports/reservations.csv') ?>" class="btn btn-outline-secondary">Export CSV</a>
             <a href="<?= base_url('exports/reservations.pdf') ?>" class="btn btn-outline-secondary">Export PDF</a>
-            <a href="<?= base_url('reservations/create') ?>" class="btn btn-primary">New reservation</a>
+            <a href="<?= base_url('reservations/create') ?>" class="btn btn-primary">Book a trip</a>
         </div>
     </div>
     <?php if ($isAdmin): ?>
@@ -24,7 +24,7 @@ $isAdmin = Auth::isAdmin();
         </div>
     <?php endif; ?>
     <form method="GET" class="row g-3 mb-4">
-        <div class="col-md-5"><input type="text" class="form-control" name="search" placeholder="Search reservations" value="<?= htmlspecialchars($filters['search'] ?? '') ?>"></div>
+        <div class="col-md-5"><input type="text" class="form-control" name="search" placeholder="Search your bookings" value="<?= htmlspecialchars($filters['search'] ?? '') ?>"></div>
         <div class="col-md-4">
             <select name="status" class="form-select">
                 <option value="">All statuses</option>
@@ -33,7 +33,7 @@ $isAdmin = Auth::isAdmin();
                 <option value="past" <?= ($filters['status'] ?? '') === 'past' ? 'selected' : '' ?>>Past</option>
             </select>
         </div>
-        <div class="col-md-3"><button class="btn btn-outline-primary w-100">Apply filters</button></div>
+        <div class="col-md-3"><button class="btn btn-outline-primary w-100">Search</button></div>
     </form>
     <div class="table-responsive">
         <table class="table align-middle">
@@ -61,7 +61,7 @@ $isAdmin = Auth::isAdmin();
             <?php endforeach; ?>
             <?php if (!$reservations['data']): ?>
                 <tr>
-                    <td colspan="7" class="text-center text-muted py-4">No reservations match the selected filters.</td>
+                    <td colspan="7" class="text-center text-muted py-4">No bookings found. Try another search.</td>
                 </tr>
             <?php endif; ?>
             </tbody>

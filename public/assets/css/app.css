@@ -15,6 +15,7 @@ body {
 
 .app-navbar {
     background: linear-gradient(135deg, var(--brand-dark), var(--brand-mid));
+    backdrop-filter: blur(10px);
 }
 
 .hero-banner {
@@ -22,29 +23,28 @@ body {
     color: #fff;
 }
 
-.hero-card,
-.card-soft {
-    background: rgba(255, 255, 255, 0.92);
-    border-radius: 1.25rem;
-    padding: 1.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+.hero-inner {
+    padding-top: 4.5rem;
+    padding-bottom: 4.5rem;
 }
 
-.chip {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.45rem 0.8rem;
-    border-radius: 999px;
-    background: var(--brand-light);
-    color: var(--brand-dark);
-    font-size: 0.875rem;
-    font-weight: 600;
+.card-soft {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 1.4rem;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 .trip-card {
     overflow: hidden;
     border: none;
-    border-radius: 1.25rem;
+    border-radius: 1.4rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.trip-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1rem 2rem rgba(17, 59, 83, 0.12) !important;
 }
 
 .trip-card img {
@@ -63,6 +63,30 @@ body {
 .badge-soft {
     background: #dff3f8;
     color: var(--brand-dark);
+}
+
+.form-control,
+.form-select,
+.btn {
+    border-radius: 0.9rem;
+}
+
+.form-control,
+.form-select {
+    padding: 0.8rem 1rem;
+}
+
+.btn {
+    padding: 0.75rem 1.1rem;
+}
+
+.navbar .nav-link {
+    opacity: 0.92;
+}
+
+.navbar .nav-link:hover,
+.navbar .nav-link.active {
+    opacity: 1;
 }
 
 .password-toggle {
