@@ -1,0 +1,70 @@
+:root {
+    --brand-dark: #113b53;
+    --brand-mid: #1f6f8b;
+    --brand-light: #eaf7fb;
+    --accent: #f4a261;
+    --surface: #ffffff;
+    --text-soft: #6c757d;
+}
+
+body {
+    background:
+        radial-gradient(circle at top right, rgba(244, 162, 97, 0.18), transparent 24%),
+        linear-gradient(180deg, #f4fbfd 0%, #eef4f7 100%);
+}
+
+.app-navbar {
+    background: linear-gradient(135deg, var(--brand-dark), var(--brand-mid));
+}
+
+.hero-banner {
+    background: linear-gradient(130deg, rgba(17, 59, 83, 0.96), rgba(31, 111, 139, 0.9));
+    color: #fff;
+}
+
+.hero-card,
+.card-soft {
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.8rem;
+    border-radius: 999px;
+    background: var(--brand-light);
+    color: var(--brand-dark);
+    font-size: 0.875rem;
+    font-weight: 600;
+}
+
+.trip-card {
+    overflow: hidden;
+    border: none;
+    border-radius: 1.25rem;
+}
+
+.trip-card img {
+    height: 220px;
+    object-fit: cover;
+}
+
+.section-title {
+    color: var(--brand-dark);
+}
+
+.table thead th {
+    background: #f1f7fa;
+}
+
+.badge-soft {
+    background: #dff3f8;
+    color: var(--brand-dark);
+}
+
+.password-toggle {
+    cursor: pointer;
+}
