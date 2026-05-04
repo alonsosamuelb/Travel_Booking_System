@@ -145,7 +145,7 @@ class AdminController extends Controller
             'departure_at' => $data['departure_at'],
             'vehicle' => trim($data['vehicle']),
             'available_seats' => (int) $data['available_seats'],
-            'image_path' => $imagePath ?: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=900&q=80',
+            'image_path' => $imagePath ?: (string) config('app.default_trip_image'),
             'status' => $data['status'],
         ]);
 

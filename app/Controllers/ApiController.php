@@ -122,7 +122,7 @@ class ApiController extends Controller
             'departure_at' => $data['departure_at'],
             'vehicle' => trim($data['vehicle']),
             'available_seats' => (int) $data['available_seats'],
-            'image_path' => trim((string) ($data['image_path'] ?? '')),
+            'image_path' => trim((string) ($data['image_path'] ?? '')) ?: (string) config('app.default_trip_image'),
             'status' => $data['status'],
         ]);
 
@@ -161,7 +161,7 @@ class ApiController extends Controller
             'departure_at' => $data['departure_at'],
             'vehicle' => trim($data['vehicle']),
             'available_seats' => (int) $data['available_seats'],
-            'image_path' => trim((string) ($data['image_path'] ?? $trip['image_path'])),
+            'image_path' => trim((string) ($data['image_path'] ?? $trip['image_path'])) ?: (string) config('app.default_trip_image'),
             'status' => $data['status'],
         ]);
 

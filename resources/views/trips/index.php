@@ -18,7 +18,7 @@
     <?php foreach ($trips['data'] as $trip): ?>
         <div class="col-md-6 col-xl-4">
             <div class="card trip-card shadow-sm h-100">
-                <img src="<?= htmlspecialchars($trip['image_path']) ?>" alt="<?= htmlspecialchars($trip['name']) ?>">
+                <img src="<?= htmlspecialchars(trip_image_url($trip['image_path'] ?? null)) ?>" alt="<?= htmlspecialchars($trip['name']) ?>">
                 <div class="card-body d-flex flex-column">
                     <div class="small text-uppercase text-muted mb-2"><?= htmlspecialchars($trip['vehicle']) ?></div>
                     <h3 class="h5"><?= htmlspecialchars($trip['name']) ?></h3>

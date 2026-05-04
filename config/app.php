@@ -10,4 +10,5 @@ return [
     'debug' => Env::get('APP_DEBUG', true),
     'reservation_limit_per_user' => (int) Env::get('RESERVATION_LIMIT_PER_USER', 3),
     'support_email' => Env::get('SUPPORT_EMAIL', 'support@travelbooking.local'),
+    'default_trip_image' => 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&w=900&q=80',
 ];

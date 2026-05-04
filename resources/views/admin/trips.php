@@ -63,7 +63,7 @@ $formTrip = $editingTrip ?? null;
                 <input type="file" class="form-control mb-2" name="image_file" accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp">
                 <div class="form-text mb-2">Upload an image or use a URL. Max 2 MB.</div>
                 <?php if (!empty($formTrip['image_path'])): ?>
-                    <img src="<?= htmlspecialchars($formTrip['image_path']) ?>" alt="<?= htmlspecialchars($formTrip['name']) ?>" class="img-fluid rounded-3 mb-2" style="max-height: 180px; object-fit: cover;">
+                    <img src="<?= htmlspecialchars(trip_image_url($formTrip['image_path'] ?? null)) ?>" alt="<?= htmlspecialchars($formTrip['name']) ?>" class="img-fluid rounded-3 mb-2" style="max-height: 180px; object-fit: cover;">
                 <?php endif; ?>
                 <select class="form-select mb-3" name="status" data-required="true">
                     <option value="published" <?= old('status', $formTrip['status'] ?? 'published') === 'published' ? 'selected' : '' ?>>Published</option>

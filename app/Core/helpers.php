@@ -55,3 +55,9 @@ function is_active(string $needle): string
     $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
     return str_contains($uri, $needle) ? 'active' : '';
 }
+
+function trip_image_url(?string $path): string
+{
+    $path = trim((string) $path);
+    return $path !== '' ? $path : (string) config('app.default_trip_image');
+}

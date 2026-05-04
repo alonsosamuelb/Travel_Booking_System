@@ -1,6 +1,6 @@
 <div class="row g-4">
     <div class="col-lg-7">
-        <img src="<?= htmlspecialchars($trip['image_path']) ?>" alt="<?= htmlspecialchars($trip['name']) ?>" class="img-fluid rounded-4 shadow-sm w-100">
+        <img src="<?= htmlspecialchars(trip_image_url($trip['image_path'] ?? null)) ?>" alt="<?= htmlspecialchars($trip['name']) ?>" class="img-fluid rounded-4 shadow-sm w-100">
     </div>
     <div class="col-lg-5">
         <div class="card card-soft shadow-sm h-100">
