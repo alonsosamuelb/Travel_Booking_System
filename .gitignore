@@ -11,6 +11,9 @@
 /storage/exports/*
 !/storage/exports/.gitkeep
 
+/storage/ratelimits/*
+!/storage/ratelimits/.gitkeep
+
 /public/uploads/trips/*
 !/public/uploads/trips/.gitkeep
 

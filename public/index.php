@@ -3,6 +3,7 @@
 require __DIR__ . '/../bootstrap/app.php';
 
 use App\Core\App;
+use App\Core\Request;
 use App\Core\Router;
 
 App::boot();
@@ -17,4 +18,4 @@ if ($base && str_starts_with($uri, $base)) {
     $uri = substr($uri, strlen($base)) ?: '/';
 }
 
-$router->dispatch($_SERVER['REQUEST_METHOD'] ?? 'GET', $uri);
+$router->dispatch(Request::method(), $uri);

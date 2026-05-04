@@ -4,6 +4,7 @@ namespace App\Middleware;
 
 use App\Core\Auth;
 use App\Core\Request;
+use App\Core\View;
 
 class RoleMiddleware
 {
@@ -20,7 +21,8 @@ class RoleMiddleware
             }
 
             http_response_code(403);
-            exit('Forbidden');
+            View::render('errors/403', [], 'layouts/minimal');
+            exit;
         }
     }
 }

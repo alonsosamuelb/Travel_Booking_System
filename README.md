@@ -1,25 +1,23 @@
 # Travel Booking System
 
-Este proyecto es mi trabajo final de 2º DAW. Se trata de una aplicacion web para gestionar reservas de viajes, con sistema de usuarios, panel de administracion y validaciones tanto en frontend como en backend.
+Proyecto final de 2º DAW desarrollado como sistema web de gestion de reservas de viajes entre usuarios.
 
-La idea principal del proyecto ha sido desarrollar una base funcional y bien organizada, aplicando contenidos de PHP, MySQL, JavaScript, Bootstrap y estructura MVC.
+La aplicacion permite gestionar usuarios, viajes y reservas, con acceso diferenciado para usuario normal y administrador. El objetivo del proyecto ha sido construir una base funcional, ordenada y ampliable, aplicando contenidos de DWES, DWEC, diseno responsive, base de datos y organizacion del codigo.
 
-## Funcionalidades principales
+## Que hace el proyecto
 
-- Registro e inicio de sesion
+- Registro, login, logout y recuperacion de contrasena
 - Roles `user` y `admin`
-- Edicion de perfil
 - Baja logica y reactivacion de cuenta
 - CRUD de viajes
-- CRUD de reservas
-- Validaciones de reservas para evitar conflictos y sobreocupacion
+- CRUD de reservas con validaciones
 - Panel de usuario
-- Panel de administrador
+- Panel de administracion
 - Exportacion de reservas en CSV y PDF
 - API REST basica
-- Instalacion inicial desde `/setup`
+- Instalacion inicial desde navegador con `/setup`
 
-## Tecnologias utilizadas
+## Tecnologias usadas
 
 - PHP
 - MySQL / MariaDB
@@ -27,11 +25,15 @@ La idea principal del proyecto ha sido desarrollar una base funcional y bien org
 - Bootstrap 5
 - HTML y CSS
 
-## Estructura general
+## Estructura principal
 
 ```text
 app/
-bootstrap/
+  Controllers/
+  Core/
+  Middleware/
+  Models/
+  Services/
 config/
 database/
 docs/
@@ -40,3 +42,4 @@ resources/views/
 routes/
 storage/
 tests/
+

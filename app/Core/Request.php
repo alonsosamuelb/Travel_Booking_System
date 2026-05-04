@@ -74,7 +74,8 @@ class Request
         $token = $_POST['_token'] ?? '';
         if (!$token || !hash_equals($_SESSION['_csrf'] ?? '', $token)) {
             http_response_code(419);
-            exit('Invalid CSRF token');
+            View::render('errors/419', [], 'layouts/minimal');
+            exit;
         }
     }
 }
