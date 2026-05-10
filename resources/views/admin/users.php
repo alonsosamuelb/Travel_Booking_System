@@ -33,7 +33,9 @@ $formUser = $editingUser ?? null;
                                 <a href="<?= base_url('admin/users?edit=' . $user['id']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>
                                 <form method="POST" action="<?= base_url('admin/users/' . $user['id'] . '/delete') ?>" class="d-inline">
                                     <?= csrf_field() ?>
-                                    <button class="btn btn-sm btn-outline-danger">Deactivate</button>
+                                    <button class="btn btn-sm <?= $user['deleted_at'] ? 'btn-outline-success' : 'btn-outline-danger' ?>">
+                                        <?= $user['deleted_at'] ? 'Activate' : 'Deactivate' ?>
+                                    </button>
                                 </form>
                             </td>
                         </tr>

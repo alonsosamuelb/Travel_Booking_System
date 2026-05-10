@@ -115,6 +115,12 @@ class User extends Model
         $statement->execute(['email' => $email]);
     }
 
+    public function reactivateById(int $id): void
+    {
+        $statement = $this->db->prepare('UPDATE users SET deleted_at = NULL, updated_at = NOW() WHERE id = :id');
+        $statement->execute(['id' => $id]);
+    }
+
     public function saveByAdmin(?int $id, array $data): void
     {
         if ($id) {

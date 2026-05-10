@@ -110,13 +110,22 @@ class AdminController extends Controller
             $this->redirect('admin/users');
         }
 
-        if ($currentAdmin && (int) $targetUser['id'] === (int) $currentAdmin['id']) {
+        $isInactive = $targetUser['deleted_at'] !== null;
+
+        if (!$isInactive && $currentAdmin && (int) $targetUser['id'] === (int) $currentAdmin['id']) {
             flash('error', 'You cannot deactivate your own administrator account.');
             $this->redirect('admin/users');
         }
 
-        if ($targetUser['role'] === 'admin' && $targetUser['deleted_at'] === null && $userModel->countActiveAdmins() <= 1) {
+        if (!$isInactive && $targetUser['role'] === 'admin' && $userModel->countActiveAdmins() <= 1) {
             flash('error', 'At least one active administrator must remain in the system.');
+            $this->redirect('admin/users');
+        }
+
+        if ($isInactive) {
+            $userModel->reactivateById($id);
+            (new ActivityLogService())->log('admin_user_reactivated', 'user', $id, 'Admin reactivated user.');
+            flash('success', 'User activated.');
             $this->redirect('admin/users');
         }
 
