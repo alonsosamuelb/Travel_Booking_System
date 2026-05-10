@@ -47,8 +47,8 @@ $isAdmin = Auth::isAdmin();
                     <td><?= (int) $reservation['seats_reserved'] ?></td>
                     <td><?= htmlspecialchars($reservation['travel_role']) ?></td>
                     <td>
-                        <span class="badge <?= $reservation['status'] === 'active' ? 'text-bg-success' : ($reservation['status'] === 'finished' ? 'text-bg-dark' : 'text-bg-secondary') ?>">
-                            <?= htmlspecialchars($reservation['status']) ?>
+                        <span class="badge <?= $reservation['status'] === 'active' ? 'text-bg-success' : ($reservation['status'] === 'completed' ? 'text-bg-dark' : 'text-bg-secondary') ?>">
+                            <?= htmlspecialchars($reservation['status'] === 'completed' ? 'finished' : $reservation['status']) ?>
                         </span>
                     </td>
                     <td class="text-end">

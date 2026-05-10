@@ -24,12 +24,14 @@ class Reservation extends Model
         if (!empty($filters['status'])) {
             if ($filters['status'] === 'active') {
                 $where[] = 'r.status = "active" AND t.departure_at >= NOW()';
+            } elseif ($filters['status'] === 'finished') {
+                $where[] = 'r.status = "completed"';
             } else {
                 $where[] = 'r.status = :status';
                 $params['status'] = $filters['status'];
             }
         } elseif ($userId !== null) {
-            $where[] = 'r.status != "finished"';
+            $where[] = 'r.status != "completed"';
         }
 
         if (!empty($filters['search'])) {
@@ -189,7 +191,7 @@ class Reservation extends Model
         $statement = $this->db->prepare('
             UPDATE reservations r
             INNER JOIN trips t ON t.id = r.trip_id
-            SET r.status = "finished", r.updated_at = NOW()
+            SET r.status = "completed", r.updated_at = NOW()
             WHERE r.status = "active"
               AND t.departure_at < NOW()
         ');

@@ -90,7 +90,7 @@ $formReservation = $editingReservation ?? null;
                 <select class="form-select mb-3" name="status" data-required="true">
                     <option value="active" <?= old('status', $formReservation['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>Active</option>
                     <option value="cancelled" <?= old('status', $formReservation['status'] ?? 'active') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                    <option value="finished" <?= old('status', $formReservation['status'] ?? 'active') === 'finished' ? 'selected' : '' ?>>Finished</option>
+                    <option value="completed" <?= old('status', $formReservation['status'] ?? 'active') === 'completed' ? 'selected' : '' ?>>Finished</option>
                 </select>
                 <button class="btn btn-primary"><?= $formReservation ? 'Update reservation' : 'Save reservation' ?></button>
             </form>
