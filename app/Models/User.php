@@ -73,9 +73,16 @@ class User extends Model
     {
         $statement = $this->db->prepare('
             INSERT INTO users (full_name, email, password, phone, role, deleted_at, created_at, updated_at)
-            VALUES (:full_name, :email, :password, :phone, :role, NULL, NOW(), NOW())
+            VALUES (:full_name, :email, :password, :phone, :role, :deleted_at, NOW(), NOW())
         ');
-        $statement->execute($data);
+        $statement->execute([
+            'full_name' => $data['full_name'],
+            'email' => $data['email'],
+            'password' => $data['password'],
+            'phone' => $data['phone'] ?? '',
+            'role' => $data['role'] ?? 'user',
+            'deleted_at' => $data['deleted_at'] ?? null,
+        ]);
 
         return (int) $this->db->lastInsertId();
     }
@@ -126,7 +133,14 @@ class User extends Model
             return;
         }
 
-        $this->create($data + ['password' => password_hash($data['password'], PASSWORD_DEFAULT)]);
+        $this->create([
+            'full_name' => $data['full_name'],
+            'email' => $data['email'],
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT),
+            'phone' => $data['phone'] ?? '',
+            'role' => $data['role'] ?? 'user',
+            'deleted_at' => $data['deleted_at'] ?? null,
+        ]);
     }
 
     public function topBookers(): array
@@ -159,5 +173,20 @@ class User extends Model
     {
         $statement = $this->db->prepare('UPDATE users SET api_token = NULL, updated_at = NOW() WHERE id = :id');
         $statement->execute(['id' => $id]);
+    }
+
+    public function countActiveAdmins(): int
+    {
+        $statement = $this->db->query('SELECT COUNT(*) FROM users WHERE role = "admin" AND deleted_at IS NULL');
+        return (int) $statement->fetchColumn();
+    }
+
+    public function find(int $id): ?array
+    {
+        $statement = $this->db->prepare("SELECT * FROM {$this->table} WHERE id = :id LIMIT 1");
+        $statement->execute(['id' => $id]);
+        $user = $statement->fetch();
+
+        return $user ?: null;
     }
 }

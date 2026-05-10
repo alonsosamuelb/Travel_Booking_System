@@ -2,6 +2,7 @@
 
 namespace App\Controllers;
 
+use App\Core\Auth;
 use App\Core\Controller;
 use App\Core\Request;
 use App\Core\Validator;
@@ -41,6 +42,8 @@ class AdminController extends Controller
     {
         $id = Request::input('id') ? (int) Request::input('id') : null;
         $data = Request::all();
+        $currentAdmin = Auth::user();
+        $userModel = new User();
 
         $errors = Validator::validate($data, [
             'full_name' => ['required', 'min:3'],
@@ -53,9 +56,26 @@ class AdminController extends Controller
             $errors = array_merge($errors, Validator::validate($data, ['password' => ['required', 'min:8']]));
         }
 
-        $existing = (new User())->findByEmail(trim((string) ($data['email'] ?? '')));
+        $existing = $userModel->findByEmail(trim((string) ($data['email'] ?? '')));
         if ($existing && (!$id || (int) $existing['id'] !== $id)) {
             $errors['email'] = 'That email is already registered.';
+        }
+
+        if ($id) {
+            $editingUser = $userModel->find($id);
+            $wantsInactive = ($data['account_status'] ?? 'active') === 'inactive';
+            $wantsAdminRole = ($data['role'] ?? 'user') === 'admin';
+
+            if ($editingUser && $currentAdmin && (int) $editingUser['id'] === (int) $currentAdmin['id'] && $wantsInactive) {
+                $errors['account_status'] = 'You cannot deactivate your own administrator account.';
+            }
+
+            if ($editingUser && $editingUser['role'] === 'admin' && $editingUser['deleted_at'] === null) {
+                $wouldLoseAdminAccess = $wantsInactive || !$wantsAdminRole;
+                if ($wouldLoseAdminAccess && $userModel->countActiveAdmins() <= 1) {
+                    $errors['role'] = 'At least one active administrator must remain in the system.';
+                }
+            }
         }
 
         if ($errors) {
@@ -64,7 +84,7 @@ class AdminController extends Controller
             $this->redirect($id ? 'admin/users?edit=' . $id : 'admin/users');
         }
 
-        (new User())->saveByAdmin($id, [
+        $userModel->saveByAdmin($id, [
             'full_name' => trim($data['full_name']),
             'email' => trim($data['email']),
             'phone' => trim($data['phone'] ?? ''),
@@ -73,7 +93,7 @@ class AdminController extends Controller
             'deleted_at' => ($data['account_status'] ?? 'active') === 'inactive' ? date('Y-m-d H:i:s') : null,
         ]);
 
-        $savedUser = (new User())->findByEmail(trim($data['email']));
+        $savedUser = $userModel->findByEmail(trim($data['email']));
         (new ActivityLogService())->log($id ? 'admin_user_updated' : 'admin_user_created', 'user', (int) ($savedUser['id'] ?? 0), 'Admin saved user record.');
         flash('success', 'User saved.');
         $this->redirect('admin/users');
@@ -81,7 +101,26 @@ class AdminController extends Controller
 
     public function deleteUser(int $id): void
     {
-        (new User())->softDelete($id);
+        $userModel = new User();
+        $currentAdmin = Auth::user();
+        $targetUser = $userModel->find($id);
+
+        if (!$targetUser) {
+            flash('error', 'User not found.');
+            $this->redirect('admin/users');
+        }
+
+        if ($currentAdmin && (int) $targetUser['id'] === (int) $currentAdmin['id']) {
+            flash('error', 'You cannot deactivate your own administrator account.');
+            $this->redirect('admin/users');
+        }
+
+        if ($targetUser['role'] === 'admin' && $targetUser['deleted_at'] === null && $userModel->countActiveAdmins() <= 1) {
+            flash('error', 'At least one active administrator must remain in the system.');
+            $this->redirect('admin/users');
+        }
+
+        $userModel->softDelete($id);
         (new ActivityLogService())->log('admin_user_deactivated', 'user', $id, 'Admin deactivated user.');
         flash('success', 'User deactivated.');
         $this->redirect('admin/users');
