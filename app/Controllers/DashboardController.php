@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $this->view('dashboard/index', [
             'user' => $user,
             'activeReservations' => $reservationModel->paginate(['status' => 'active'], 1, 5, (int) $user['id'])['data'],
-            'pastReservations' => $reservationModel->paginate(['status' => 'past'], 1, 5, (int) $user['id'])['data'],
+            'pastReservations' => $reservationModel->paginate(['status' => 'finished'], 1, 5, (int) $user['id'])['data'],
             'availableTrips' => (new Trip())->paginate(['upcoming' => 1], 1, 3)['data'],
             'topTrips' => (new Trip())->mostBooked(),
             'topUsers' => (new User())->topBookers(),

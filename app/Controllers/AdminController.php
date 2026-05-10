@@ -192,7 +192,7 @@ class AdminController extends Controller
             'reservation_date' => ['required', 'datetime'],
             'seats_reserved' => ['required', 'integer'],
             'travel_role' => ['required', 'in:passenger,driver'],
-            'status' => ['required', 'in:active,cancelled,completed'],
+            'status' => ['required', 'in:active,cancelled,finished'],
         ]);
         $errors = array_merge($errors, (new ReservationService())->validateReservation($data, (int) $data['user_id'], $id, (string) $data['status']));
 

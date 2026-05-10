@@ -11,7 +11,7 @@ $formReservation = $editingReservation ?? null;
                 <option value="">All statuses</option>
                 <option value="active" <?= ($filters['status'] ?? '') === 'active' ? 'selected' : '' ?>>Active</option>
                 <option value="cancelled" <?= ($filters['status'] ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                <option value="completed" <?= ($filters['status'] ?? '') === 'completed' ? 'selected' : '' ?>>Completed</option>
+                <option value="finished" <?= ($filters['status'] ?? '') === 'finished' ? 'selected' : '' ?>>Finished</option>
             </select>
         </div>
         <div class="col-md-3"><button class="btn btn-outline-primary w-100">Filter</button></div>
@@ -90,7 +90,7 @@ $formReservation = $editingReservation ?? null;
                 <select class="form-select mb-3" name="status" data-required="true">
                     <option value="active" <?= old('status', $formReservation['status'] ?? 'active') === 'active' ? 'selected' : '' ?>>Active</option>
                     <option value="cancelled" <?= old('status', $formReservation['status'] ?? 'active') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                    <option value="completed" <?= old('status', $formReservation['status'] ?? 'active') === 'completed' ? 'selected' : '' ?>>Completed</option>
+                    <option value="finished" <?= old('status', $formReservation['status'] ?? 'active') === 'finished' ? 'selected' : '' ?>>Finished</option>
                 </select>
                 <button class="btn btn-primary"><?= $formReservation ? 'Update reservation' : 'Save reservation' ?></button>
             </form>

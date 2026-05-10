@@ -66,12 +66,16 @@
             </div>
         <?php else: ?>
             <div class="card card-soft shadow-sm">
-                <h3 class="h5">Past bookings</h3>
+                <h3 class="h5">Booking history</h3>
                 <ul class="list-group list-group-flush">
                     <?php foreach ($pastReservations as $reservation): ?>
-                        <li class="list-group-item px-0"><?= htmlspecialchars($reservation['trip_name']) ?> <span class="text-muted small d-block"><?= date('d/m/Y H:i', strtotime($reservation['departure_at'])) ?></span></li>
+                        <li class="list-group-item px-0">
+                            <?= htmlspecialchars($reservation['trip_name']) ?>
+                            <span class="text-muted small d-block"><?= date('d/m/Y H:i', strtotime($reservation['departure_at'])) ?></span>
+                            <span class="badge text-bg-dark mt-2">finished</span>
+                        </li>
                     <?php endforeach; ?>
-                    <?php if (!$pastReservations): ?><li class="list-group-item px-0 text-muted">No completed trips yet.</li><?php endif; ?>
+                    <?php if (!$pastReservations): ?><li class="list-group-item px-0 text-muted">No finished bookings yet.</li><?php endif; ?>
                 </ul>
             </div>
         <?php endif; ?>

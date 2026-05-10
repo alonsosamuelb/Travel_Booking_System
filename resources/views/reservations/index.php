@@ -30,7 +30,7 @@ $isAdmin = Auth::isAdmin();
                 <option value="">All statuses</option>
                 <option value="active" <?= ($filters['status'] ?? '') === 'active' ? 'selected' : '' ?>>Active</option>
                 <option value="cancelled" <?= ($filters['status'] ?? '') === 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
-                <option value="past" <?= ($filters['status'] ?? '') === 'past' ? 'selected' : '' ?>>Past</option>
+                <option value="finished" <?= ($filters['status'] ?? '') === 'finished' ? 'selected' : '' ?>>Finished</option>
             </select>
         </div>
         <div class="col-md-3"><button class="btn btn-outline-primary w-100">Search</button></div>
@@ -46,7 +46,11 @@ $isAdmin = Auth::isAdmin();
                     <td><?= date('d/m/Y H:i', strtotime($reservation['departure_at'])) ?></td>
                     <td><?= (int) $reservation['seats_reserved'] ?></td>
                     <td><?= htmlspecialchars($reservation['travel_role']) ?></td>
-                    <td><span class="badge <?= $reservation['status'] === 'active' ? 'text-bg-success' : 'text-bg-secondary' ?>"><?= htmlspecialchars($reservation['status']) ?></span></td>
+                    <td>
+                        <span class="badge <?= $reservation['status'] === 'active' ? 'text-bg-success' : ($reservation['status'] === 'finished' ? 'text-bg-dark' : 'text-bg-secondary') ?>">
+                            <?= htmlspecialchars($reservation['status']) ?>
+                        </span>
+                    </td>
                     <td class="text-end">
                         <a href="<?= base_url('reservations/' . $reservation['id']) ?>" class="btn btn-sm btn-outline-primary">View</a>
                         <?php if ($reservation['status'] === 'active'): ?>

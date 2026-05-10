@@ -11,6 +11,8 @@ class Reservation extends Model
 
     public function paginate(array $filters, int $page = 1, int $perPage = 10, ?int $userId = null): array
     {
+        $this->syncFinishedReservations();
+
         $where = ['1=1'];
         $params = [];
 
@@ -20,14 +22,14 @@ class Reservation extends Model
         }
 
         if (!empty($filters['status'])) {
-            if ($filters['status'] === 'past') {
-                $where[] = 't.departure_at < NOW()';
-            } elseif ($filters['status'] === 'active') {
+            if ($filters['status'] === 'active') {
                 $where[] = 'r.status = "active" AND t.departure_at >= NOW()';
             } else {
                 $where[] = 'r.status = :status';
                 $params['status'] = $filters['status'];
             }
+        } elseif ($userId !== null) {
+            $where[] = 'r.status != "finished"';
         }
 
         if (!empty($filters['search'])) {
@@ -67,6 +69,8 @@ class Reservation extends Model
 
     public function findDetailed(int $id): ?array
     {
+        $this->syncFinishedReservations();
+
         $statement = $this->db->prepare('
             SELECT r.*, u.full_name, u.email, t.name AS trip_name, t.origin, t.destination, t.departure_at, t.vehicle
             FROM reservations r
@@ -82,6 +86,8 @@ class Reservation extends Model
 
     public function activeSeatsForTrip(int $tripId): int
     {
+        $this->syncFinishedReservations();
+
         $statement = $this->db->prepare('SELECT COALESCE(SUM(seats_reserved), 0) FROM reservations WHERE trip_id = :trip_id AND status = "active"');
         $statement->execute(['trip_id' => $tripId]);
         return (int) $statement->fetchColumn();
@@ -89,6 +95,8 @@ class Reservation extends Model
 
     public function userActiveReservationCount(int $userId): int
     {
+        $this->syncFinishedReservations();
+
         $statement = $this->db->prepare('SELECT COUNT(*) FROM reservations WHERE user_id = :user_id AND status = "active"');
         $statement->execute(['user_id' => $userId]);
         return (int) $statement->fetchColumn();
@@ -96,6 +104,8 @@ class Reservation extends Model
 
     public function hasUserTripConflict(int $userId, string $departureAt, ?int $ignoreReservationId = null): bool
     {
+        $this->syncFinishedReservations();
+
         $sql = '
             SELECT COUNT(*)
             FROM reservations r
@@ -118,6 +128,8 @@ class Reservation extends Model
 
     public function hasDuplicate(int $userId, int $tripId, ?int $ignoreReservationId = null): bool
     {
+        $this->syncFinishedReservations();
+
         $sql = 'SELECT COUNT(*) FROM reservations WHERE user_id = :user_id AND trip_id = :trip_id AND status = "active"';
         $params = ['user_id' => $userId, 'trip_id' => $tripId];
 
@@ -160,6 +172,8 @@ class Reservation extends Model
 
     public function history(): array
     {
+        $this->syncFinishedReservations();
+
         $statement = $this->db->query('
             SELECT DATE(reservation_date) AS reservation_day, COUNT(*) AS total
             FROM reservations
@@ -168,5 +182,17 @@ class Reservation extends Model
             LIMIT 15
         ');
         return $statement->fetchAll();
+    }
+
+    private function syncFinishedReservations(): void
+    {
+        $statement = $this->db->prepare('
+            UPDATE reservations r
+            INNER JOIN trips t ON t.id = r.trip_id
+            SET r.status = "finished", r.updated_at = NOW()
+            WHERE r.status = "active"
+              AND t.departure_at < NOW()
+        ');
+        $statement->execute();
     }
 }
