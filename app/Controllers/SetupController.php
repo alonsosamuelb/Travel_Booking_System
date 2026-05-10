@@ -44,13 +44,19 @@ class SetupController extends Controller
         }
 
         try {
-            $migrations = (new InstallerService())->install($data);
+            $installMode = (new InstallerService())->install($data);
         } catch (\RuntimeException $exception) {
             $_SESSION['_errors'] = ['setup' => $exception->getMessage()];
             $this->redirect('setup');
         }
 
-        flash('success', 'Application installed successfully. Applied migrations: ' . ($migrations ? implode(', ', $migrations) : 'none'));
+        $message = match ($installMode) {
+            'schema' => 'Application installed successfully using the full schema snapshot.',
+            'existing' => 'Application configuration saved. An existing database structure was detected and kept.',
+            default => 'Application installed successfully.',
+        };
+
+        flash('success', $message);
         $this->redirect('setup');
     }
 }

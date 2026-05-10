@@ -19,14 +19,13 @@ class InstallerService
 
         try {
             $db = Database::makeConnection(App::config('database'));
-            $statement = $db->query("SHOW TABLES LIKE 'schema_migrations'");
-            return (bool) $statement->fetchColumn();
+            return $this->hasCoreTables($db);
         } catch (\Throwable) {
             return false;
         }
     }
 
-    public function install(array $data): array
+    public function install(array $data): string
     {
         $config = [
             'host' => trim((string) ($data['db_host'] ?? '127.0.0.1')),
@@ -45,11 +44,13 @@ class InstallerService
         App::boot();
         Database::reset();
 
-        $migrationService = new MigrationService();
-        $migrations = $migrationService->migrate();
-        $migrationService->seed();
+        $db = Database::connection();
+        if (!$this->hasCoreTables($db)) {
+            $this->importSchemaSnapshot($db);
+            return 'schema';
+        }
 
-        return $migrations;
+        return 'existing';
     }
 
     public function defaults(): array
@@ -113,5 +114,32 @@ class InstallerService
     private function envPath(): string
     {
         return __DIR__ . '/../../.env';
+    }
+
+    private function hasCoreTables(PDO $db): bool
+    {
+        foreach (['users', 'trips', 'reservations'] as $table) {
+            $statement = $db->query("SHOW TABLES LIKE '{$table}'");
+            if (!$statement->fetchColumn()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private function importSchemaSnapshot(PDO $db): void
+    {
+        $schemaPath = __DIR__ . '/../../database/schema.sql';
+        if (!is_file($schemaPath)) {
+            throw new \RuntimeException('The schema snapshot file was not found.');
+        }
+
+        $sql = (string) file_get_contents($schemaPath);
+        if (trim($sql) === '') {
+            throw new \RuntimeException('The schema snapshot file is empty.');
+        }
+
+        $db->exec($sql);
     }
 }
