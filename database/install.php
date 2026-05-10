@@ -20,15 +20,19 @@ if (trim($sql) === '') {
 $config = App::config('database');
 
 try {
-    $server = Database::makeConnection($config, false);
-    $databaseName = str_replace('`', '``', $config['database']);
-    $server->exec("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET {$config['charset']} COLLATE {$config['charset']}_unicode_ci");
+    try {
+        $db = Database::connection();
+    } catch (\Throwable) {
+        $server = Database::makeConnection($config, false);
+        $databaseName = str_replace('`', '``', $config['database']);
+        $server->exec("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET {$config['charset']} COLLATE {$config['charset']}_unicode_ci");
+        Database::reset();
+        $db = Database::connection();
+    }
 
-    Database::reset();
-    $db = Database::connection();
     $db->exec($sql);
 
     echo "Schema imported successfully.\n";
 } catch (\Throwable $exception) {
-    exit('Install failed: ' . $exception->getMessage() . "\n");
+    exit("Install failed: {$exception->getMessage()}\nIf you are using shared hosting, create the database first from the hosting panel and run this script again.\n");
 }

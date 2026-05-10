@@ -36,8 +36,11 @@ class InstallerService
             'charset' => trim((string) ($data['db_charset'] ?? 'utf8mb4')),
         ];
 
-        $this->assertConnection($config);
-        $this->createDatabaseIfNeeded($config);
+        $databaseExists = $this->canConnectToDatabase($config);
+        if (!$databaseExists) {
+            $this->assertServerConnection($config);
+            $this->createDatabaseIfNeeded($config);
+        }
         $this->writeEnvFile($data, $config);
 
         Env::load($this->envPath());
@@ -72,7 +75,17 @@ class InstallerService
         ];
     }
 
-    private function assertConnection(array $config): void
+    private function canConnectToDatabase(array $config): bool
+    {
+        try {
+            Database::makeConnection($config);
+            return true;
+        } catch (PDOException) {
+            return false;
+        }
+    }
+
+    private function assertServerConnection(array $config): void
     {
         try {
             Database::makeConnection($config, false);
@@ -83,9 +96,13 @@ class InstallerService
 
     private function createDatabaseIfNeeded(array $config): void
     {
-        $serverConnection = Database::makeConnection($config, false);
-        $databaseName = str_replace('`', '``', $config['database']);
-        $serverConnection->exec("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET {$config['charset']} COLLATE {$config['charset']}_unicode_ci");
+        try {
+            $serverConnection = Database::makeConnection($config, false);
+            $databaseName = str_replace('`', '``', $config['database']);
+            $serverConnection->exec("CREATE DATABASE IF NOT EXISTS `{$databaseName}` CHARACTER SET {$config['charset']} COLLATE {$config['charset']}_unicode_ci");
+        } catch (PDOException $exception) {
+            throw new \RuntimeException('The configured database does not exist yet and could not be created automatically. On shared hosting, create the database first from the hosting panel and then run setup again.');
+        }
     }
 
     private function writeEnvFile(array $data, array $config): void

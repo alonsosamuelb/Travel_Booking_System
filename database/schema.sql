@@ -1,6 +1,3 @@
-CREATE DATABASE IF NOT EXISTS travel_booking_system CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE travel_booking_system;
-
 DROP TABLE IF EXISTS password_resets;
 DROP TABLE IF EXISTS activity_logs;
 DROP TABLE IF EXISTS reservations;

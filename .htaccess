@@ -1,0 +1,13 @@
+RewriteEngine On
+
+# Block direct access to sensitive files and application directories.
+RewriteRule ^(\.env|composer\.(json|lock)|database|app|bootstrap|config|docs|resources|routes|storage|tests)(/.*)?$ - [F,L,NC]
+
+# Keep direct access to files already inside /public.
+RewriteRule ^public/ - [L]
+
+# Route every public request through /public so the project can run
+# from a shared hosting htdocs folder without changing the document root.
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ public/$1 [L,QSA]
