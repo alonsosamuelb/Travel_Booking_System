@@ -45,7 +45,7 @@
         <ul class="pagination">
             <?php for ($i = 1; $i <= $pages; $i++): ?>
                 <li class="page-item <?= $i === (int) $trips['page'] ? 'active' : '' ?>">
-                    <a class="page-link" href="<?= base_url('trips?page=' . $i) ?>"><?= $i ?></a>
+                    <a class="page-link" href="<?= url_with_query('trips', ['page' => $i]) ?>"><?= $i ?></a>
                 </li>
             <?php endfor; ?>
         </ul>

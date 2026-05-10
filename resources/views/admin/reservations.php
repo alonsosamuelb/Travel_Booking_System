@@ -29,13 +29,19 @@ $formReservation = $editingReservation ?? null;
                             <td><?= htmlspecialchars($reservation['full_name']) ?></td>
                             <td><?= htmlspecialchars($reservation['trip_name']) ?></td>
                             <td><?= (int) $reservation['seats_reserved'] ?></td>
-                            <td><?= htmlspecialchars($reservation['status']) ?></td>
+                            <td>
+                                <span class="badge <?= $reservation['status'] === 'active' ? 'text-bg-success' : ($reservation['status'] === 'completed' ? 'text-bg-dark' : 'text-bg-secondary') ?>">
+                                    <?= htmlspecialchars($reservation['status'] === 'completed' ? 'finished' : $reservation['status']) ?>
+                                </span>
+                            </td>
                             <td class="text-end">
                                 <a href="<?= base_url('admin/reservations?edit=' . $reservation['id']) ?>" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <form method="POST" action="<?= base_url('admin/reservations/' . $reservation['id'] . '/cancel') ?>" class="d-inline">
-                                    <?= csrf_field() ?>
-                                    <button class="btn btn-sm btn-outline-danger">Cancel</button>
-                                </form>
+                                <?php if ($reservation['status'] === 'active'): ?>
+                                    <form method="POST" action="<?= base_url('admin/reservations/' . $reservation['id'] . '/cancel') ?>" class="d-inline">
+                                        <?= csrf_field() ?>
+                                        <button class="btn btn-sm btn-outline-danger">Cancel</button>
+                                    </form>
+                                <?php endif; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -47,11 +53,13 @@ $formReservation = $editingReservation ?? null;
                     </tbody>
                 </table>
             </div>
-            <ul class="pagination mb-0">
-                <?php for ($i = 1; $i <= $pages; $i++): ?>
-                    <li class="page-item <?= $i === (int) $reservations['page'] ? 'active' : '' ?>"><a class="page-link" href="<?= base_url('admin/reservations?page=' . $i) ?>"><?= $i ?></a></li>
-                <?php endfor; ?>
-            </ul>
+            <?php if ($pages > 1): ?>
+                <ul class="pagination mb-0">
+                    <?php for ($i = 1; $i <= $pages; $i++): ?>
+                        <li class="page-item <?= $i === (int) $reservations['page'] ? 'active' : '' ?>"><a class="page-link" href="<?= url_with_query('admin/reservations', ['page' => $i]) ?>"><?= $i ?></a></li>
+                    <?php endfor; ?>
+                </ul>
+            <?php endif; ?>
         </div>
     </div>
     <div class="col-lg-5">

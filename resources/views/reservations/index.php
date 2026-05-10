@@ -71,11 +71,13 @@ $isAdmin = Auth::isAdmin();
             </tbody>
         </table>
     </div>
-    <nav>
-        <ul class="pagination mb-0">
-            <?php for ($i = 1; $i <= $pages; $i++): ?>
-                <li class="page-item <?= $i === (int) $reservations['page'] ? 'active' : '' ?>"><a class="page-link" href="<?= base_url('reservations?page=' . $i) ?>"><?= $i ?></a></li>
-            <?php endfor; ?>
-        </ul>
-    </nav>
+    <?php if ($pages > 1): ?>
+        <nav>
+            <ul class="pagination mb-0">
+                <?php for ($i = 1; $i <= $pages; $i++): ?>
+                    <li class="page-item <?= $i === (int) $reservations['page'] ? 'active' : '' ?>"><a class="page-link" href="<?= url_with_query('reservations', ['page' => $i]) ?>"><?= $i ?></a></li>
+                <?php endfor; ?>
+            </ul>
+        </nav>
+    <?php endif; ?>
 </div>

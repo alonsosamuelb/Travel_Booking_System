@@ -31,8 +31,10 @@ CREATE TABLE trips (
     available_seats INT UNSIGNED NOT NULL,
     image_path VARCHAR(255) DEFAULT NULL,
     status ENUM('draft', 'published') NOT NULL DEFAULT 'published',
+    creator_user_id INT UNSIGNED DEFAULT NULL,
     created_at DATETIME NOT NULL,
-    updated_at DATETIME NOT NULL
+    updated_at DATETIME NOT NULL,
+    CONSTRAINT fk_trip_creator_user FOREIGN KEY (creator_user_id) REFERENCES users(id) ON DELETE SET NULL
 );
 
 CREATE TABLE reservations (
@@ -74,6 +76,7 @@ CREATE INDEX idx_users_deleted_at ON users(deleted_at);
 CREATE INDEX idx_users_api_token ON users(api_token);
 CREATE INDEX idx_trips_departure_at ON trips(departure_at);
 CREATE INDEX idx_trips_route ON trips(origin, destination);
+CREATE INDEX idx_trips_creator_user_id ON trips(creator_user_id);
 CREATE INDEX idx_reservations_status ON reservations(status);
 CREATE INDEX idx_reservations_user_trip ON reservations(user_id, trip_id);
 CREATE INDEX idx_activity_logs_created_at ON activity_logs(created_at);

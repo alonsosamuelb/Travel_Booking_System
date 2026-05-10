@@ -6,6 +6,7 @@ use App\Core\Auth;
 use App\Core\Controller;
 use App\Core\Request;
 use App\Core\Validator;
+use App\Core\View;
 use App\Models\Reservation;
 use App\Models\Trip;
 use App\Services\ActivityLogService;
@@ -33,11 +34,14 @@ class ReservationController extends Controller
 
     public function create(): void
     {
+        $selectedTripId = Request::input('trip') ? (int) Request::input('trip') : null;
+
         $this->view('reservations/form', [
             'reservation' => null,
             'tripOptions' => (new Trip())->allForSelect(),
             'action' => base_url('reservations/create'),
             'title' => 'Create reservation',
+            'selectedTripId' => $selectedTripId,
         ]);
     }
 
@@ -84,7 +88,8 @@ class ReservationController extends Controller
 
         if (!$reservation || (!Auth::isAdmin() && (int) $reservation['user_id'] !== (int) $user['id'])) {
             http_response_code(403);
-            exit('Forbidden');
+            View::render('errors/403', [], 'layouts/minimal');
+            exit;
         }
 
         $this->view('reservations/show', ['reservation' => $reservation]);
@@ -115,7 +120,8 @@ class ReservationController extends Controller
 
         if (!$reservation || (int) $reservation['user_id'] !== (int) $user['id']) {
             http_response_code(403);
-            exit('Forbidden');
+            View::render('errors/403', [], 'layouts/minimal');
+            exit;
         }
 
         if (strtotime($reservation['departure_at']) < strtotime('+2 hours')) {
@@ -160,7 +166,8 @@ class ReservationController extends Controller
 
         if (!$reservation || (int) $reservation['user_id'] !== (int) $user['id']) {
             http_response_code(403);
-            exit('Forbidden');
+            View::render('errors/403', [], 'layouts/minimal');
+            exit;
         }
 
         if (strtotime($reservation['departure_at']) < strtotime('+2 hours')) {

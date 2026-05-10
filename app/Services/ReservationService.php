@@ -22,6 +22,10 @@ class ReservationService
             $errors['trip_id'] = 'You can only reserve upcoming trips.';
         }
 
+        if ((int) ($trip['creator_user_id'] ?? 0) === $userId) {
+            $errors['trip_id'] = 'You cannot reserve a trip you published as a driver.';
+        }
+
         $requestedSeats = (int) $data['seats_reserved'];
         if ($requestedSeats < 1) {
             $errors['seats_reserved'] = 'At least one seat is required.';

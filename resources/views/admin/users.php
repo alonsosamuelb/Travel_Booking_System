@@ -41,11 +41,13 @@ $formUser = $editingUser ?? null;
                     </tbody>
                 </table>
             </div>
-            <ul class="pagination mb-0">
-                <?php for ($i = 1; $i <= $pages; $i++): ?>
-                    <li class="page-item <?= $i === (int) $users['page'] ? 'active' : '' ?>"><a class="page-link" href="<?= base_url('admin/users?page=' . $i) ?>"><?= $i ?></a></li>
-                <?php endfor; ?>
-            </ul>
+            <?php if ($pages > 1): ?>
+                <ul class="pagination mb-0">
+                    <?php for ($i = 1; $i <= $pages; $i++): ?>
+                        <li class="page-item <?= $i === (int) $users['page'] ? 'active' : '' ?>"><a class="page-link" href="<?= url_with_query('admin/users', ['page' => $i]) ?>"><?= $i ?></a></li>
+                    <?php endfor; ?>
+                </ul>
+            <?php endif; ?>
         </div>
     </div>
     <div class="col-lg-5">

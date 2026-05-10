@@ -19,7 +19,11 @@ class Database
             self::$connection = self::makeConnection(App::config('database'));
         } catch (PDOException $exception) {
             http_response_code(500);
-            exit('Database connection error: ' . $exception->getMessage());
+            if (PHP_SAPI === 'cli') {
+                exit('Database connection error: ' . $exception->getMessage());
+            }
+
+            exit('Database connection error. Please review the database configuration.');
         }
 
         return self::$connection;

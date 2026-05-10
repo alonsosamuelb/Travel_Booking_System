@@ -124,6 +124,7 @@ class ApiController extends Controller
             'available_seats' => (int) $data['available_seats'],
             'image_path' => trim((string) ($data['image_path'] ?? '')) ?: (string) config('app.default_trip_image'),
             'status' => $data['status'],
+            'creator_user_id' => null,
         ]);
 
         $this->json(['message' => 'Trip created'], 201);
@@ -163,6 +164,7 @@ class ApiController extends Controller
             'available_seats' => (int) $data['available_seats'],
             'image_path' => trim((string) ($data['image_path'] ?? $trip['image_path'])) ?: (string) config('app.default_trip_image'),
             'status' => $data['status'],
+            'creator_user_id' => (int) ($trip['creator_user_id'] ?? 0) ?: null,
         ]);
 
         $this->json(['message' => 'Trip updated']);

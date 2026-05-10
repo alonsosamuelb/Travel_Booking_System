@@ -8,6 +8,50 @@ use PDO;
 class Trip extends Model
 {
     protected string $table = 'trips';
+    private ?bool $hasCreatorUserColumn = null;
+
+    public function paginateByOwner(int $userId, array $filters, int $page = 1, int $perPage = 8): array
+    {
+        if (!$this->supportsCreatorTrips()) {
+            return ['data' => [], 'total' => 0, 'per_page' => $perPage, 'page' => $page];
+        }
+
+        $where = ['t.creator_user_id = :user_id'];
+        $params = ['user_id' => $userId];
+
+        if (!empty($filters['search'])) {
+            $where[] = '(t.name LIKE :search OR t.origin LIKE :search OR t.destination LIKE :search)';
+            $params['search'] = '%' . $filters['search'] . '%';
+        }
+
+        if (!empty($filters['status'])) {
+            $where[] = 't.status = :status';
+            $params['status'] = $filters['status'];
+        }
+
+        $countStatement = $this->db->prepare('SELECT COUNT(*) FROM trips t WHERE ' . implode(' AND ', $where));
+        $countStatement->execute($params);
+        $total = (int) $countStatement->fetchColumn();
+
+        $offset = ($page - 1) * $perPage;
+        $statement = $this->db->prepare('
+            SELECT t.*, COALESCE(SUM(CASE WHEN r.status = "active" THEN r.seats_reserved ELSE 0 END), 0) AS reserved_seats
+            FROM trips t
+            LEFT JOIN reservations r ON r.trip_id = t.id
+            WHERE ' . implode(' AND ', $where) . '
+            GROUP BY t.id
+            ORDER BY t.departure_at DESC
+            LIMIT :limit OFFSET :offset
+        ');
+        foreach ($params as $key => $value) {
+            $statement->bindValue(':' . $key, $value);
+        }
+        $statement->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $statement->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $statement->execute();
+
+        return ['data' => $statement->fetchAll(), 'total' => $total, 'per_page' => $perPage, 'page' => $page];
+    }
 
     public function paginate(array $filters, int $page = 1, int $perPage = 6, bool $admin = false): array
     {
@@ -65,9 +109,13 @@ class Trip extends Model
 
     public function findWithAvailability(int $id): ?array
     {
+        $selectCreator = $this->supportsCreatorTrips() ? 'u.full_name AS creator_name,' : 'NULL AS creator_name,';
+        $joinCreator = $this->supportsCreatorTrips() ? 'LEFT JOIN users u ON u.id = t.creator_user_id' : '';
+
         $statement = $this->db->prepare('
-            SELECT t.*, COALESCE(SUM(CASE WHEN r.status = "active" THEN r.seats_reserved ELSE 0 END), 0) AS reserved_seats
+            SELECT t.*, ' . $selectCreator . ' COALESCE(SUM(CASE WHEN r.status = "active" THEN r.seats_reserved ELSE 0 END), 0) AS reserved_seats
             FROM trips t
+            ' . $joinCreator . '
             LEFT JOIN reservations r ON r.trip_id = t.id
             WHERE t.id = :id
             GROUP BY t.id
@@ -80,15 +128,36 @@ class Trip extends Model
 
     public function save(?int $id, array $data): void
     {
+        $creatorUserId = $this->supportsCreatorTrips() ? ($data['creator_user_id'] ?? null) : null;
+
         if ($id) {
-            $statement = $this->db->prepare('
+            $sql = '
                 UPDATE trips
                 SET name = :name, description = :description, origin = :origin, destination = :destination,
                     departure_at = :departure_at, vehicle = :vehicle, available_seats = :available_seats,
-                    image_path = :image_path, status = :status, updated_at = NOW()
-                WHERE id = :id
+                    image_path = :image_path, status = :status';
+            if ($this->supportsCreatorTrips()) {
+                $sql .= ', creator_user_id = :creator_user_id';
+            }
+            $sql .= ', updated_at = NOW() WHERE id = :id';
+
+            $statement = $this->db->prepare($sql);
+            $params = $data + ['id' => $id];
+            if ($this->supportsCreatorTrips()) {
+                $params['creator_user_id'] = $creatorUserId;
+            } else {
+                unset($params['creator_user_id']);
+            }
+            $statement->execute($params);
+            return;
+        }
+
+        if ($this->supportsCreatorTrips()) {
+            $statement = $this->db->prepare('
+                INSERT INTO trips (name, description, origin, destination, departure_at, vehicle, available_seats, image_path, status, creator_user_id, created_at, updated_at)
+                VALUES (:name, :description, :origin, :destination, :departure_at, :vehicle, :available_seats, :image_path, :status, :creator_user_id, NOW(), NOW())
             ');
-            $statement->execute($data + ['id' => $id]);
+            $statement->execute($data + ['creator_user_id' => $creatorUserId]);
             return;
         }
 
@@ -96,13 +165,22 @@ class Trip extends Model
             INSERT INTO trips (name, description, origin, destination, departure_at, vehicle, available_seats, image_path, status, created_at, updated_at)
             VALUES (:name, :description, :origin, :destination, :departure_at, :vehicle, :available_seats, :image_path, :status, NOW(), NOW())
         ');
-        $statement->execute($data);
+        $params = $data;
+        unset($params['creator_user_id']);
+        $statement->execute($params);
     }
 
     public function delete(int $id): void
     {
         $statement = $this->db->prepare('DELETE FROM trips WHERE id = :id');
         $statement->execute(['id' => $id]);
+    }
+
+    public function hasReservations(int $id): bool
+    {
+        $statement = $this->db->prepare('SELECT COUNT(*) FROM reservations WHERE trip_id = :id');
+        $statement->execute(['id' => $id]);
+        return (int) $statement->fetchColumn() > 0;
     }
 
     public function mostBooked(): array
@@ -116,5 +194,16 @@ class Trip extends Model
             LIMIT 5
         ');
         return $statement->fetchAll();
+    }
+
+    public function supportsCreatorTrips(): bool
+    {
+        if ($this->hasCreatorUserColumn !== null) {
+            return $this->hasCreatorUserColumn;
+        }
+
+        $statement = $this->db->query("SHOW COLUMNS FROM trips LIKE 'creator_user_id'");
+        $this->hasCreatorUserColumn = (bool) $statement->fetch();
+        return $this->hasCreatorUserColumn;
     }
 }

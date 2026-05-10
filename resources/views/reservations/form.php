@@ -1,3 +1,4 @@
+<?php $selectedTripId = $selectedTripId ?? null; ?>
 <div class="row justify-content-center">
     <div class="col-lg-8">
         <div class="card card-soft shadow-sm">
@@ -10,7 +11,7 @@
                         <select class="form-select" name="trip_id" data-required="true">
                             <option value="">Select a trip</option>
                             <?php foreach ($tripOptions as $trip): ?>
-                                <?php $selected = (string) old('trip_id', $reservation['trip_id'] ?? '') === (string) $trip['id']; ?>
+                                <?php $selected = (string) old('trip_id', $reservation['trip_id'] ?? $selectedTripId ?? '') === (string) $trip['id']; ?>
                                 <option value="<?= (int) $trip['id'] ?>" <?= $selected ? 'selected' : '' ?>><?= htmlspecialchars($trip['name']) ?> | <?= date('d/m/Y H:i', strtotime($trip['departure_at'])) ?></option>
                             <?php endforeach; ?>
                         </select>

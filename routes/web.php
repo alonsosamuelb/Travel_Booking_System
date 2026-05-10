@@ -46,6 +46,9 @@ $router->post('/profile/api-token/revoke', [ProfileController::class, 'revokeApi
 
 $router->get('/trips', [TripController::class, 'index']);
 $router->get('/trips/{id}', [TripController::class, 'show']);
+$router->get('/my-trips', [TripController::class, 'manage'], $auth);
+$router->post('/my-trips/save', [TripController::class, 'saveOwnTrip'], $auth);
+$router->post('/my-trips/{id}/delete', [TripController::class, 'deleteOwnTrip'], $auth);
 
 $router->get('/reservations', [ReservationController::class, 'index'], $auth);
 $router->get('/reservations/create', [ReservationController::class, 'create'], $auth);

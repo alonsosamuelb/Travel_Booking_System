@@ -148,12 +148,18 @@ class Reservation extends Model
     public function save(?int $id, array $data): int
     {
         if ($id) {
-            $statement = $this->db->prepare('
+            $sql = '
                 UPDATE reservations
                 SET trip_id = :trip_id, reservation_date = :reservation_date, seats_reserved = :seats_reserved,
-                    travel_role = :travel_role, notes = :notes, status = :status, updated_at = NOW()
-                WHERE id = :id
-            ');
+                    travel_role = :travel_role, notes = :notes, status = :status';
+
+            if (array_key_exists('user_id', $data)) {
+                $sql .= ', user_id = :user_id';
+            }
+
+            $sql .= ', updated_at = NOW() WHERE id = :id';
+
+            $statement = $this->db->prepare($sql);
             $statement->execute($data + ['id' => $id]);
             return $id;
         }

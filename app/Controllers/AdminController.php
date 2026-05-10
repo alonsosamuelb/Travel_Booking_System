@@ -162,7 +162,13 @@ class AdminController extends Controller
 
     public function deleteTrip(int $id): void
     {
-        (new Trip())->delete($id);
+        $tripModel = new Trip();
+        if ($tripModel->hasReservations($id)) {
+            flash('error', 'This trip cannot be deleted because it already has linked reservations.');
+            $this->redirect('admin/trips');
+        }
+
+        $tripModel->delete($id);
         (new ActivityLogService())->log('admin_trip_deleted', 'trip', $id, 'Admin deleted trip.');
         flash('success', 'Trip deleted.');
         $this->redirect('admin/trips');
@@ -187,6 +193,14 @@ class AdminController extends Controller
     {
         $id = Request::input('id') ? (int) Request::input('id') : null;
         $data = Request::all();
+        $trip = !empty($data['trip_id']) ? (new Trip())->findWithAvailability((int) $data['trip_id']) : null;
+
+        if (($data['status'] ?? '') === 'active' && $trip && strtotime((string) $trip['departure_at']) <= time()) {
+            $_SESSION['_errors'] = ['status' => 'A past trip cannot be reactivated. Keep this reservation as finished or cancelled.'];
+            flash('error', 'Reservation could not be saved.');
+            $this->redirect($id ? 'admin/reservations?edit=' . $id : 'admin/reservations');
+        }
+
         $errors = Validator::validate($data, [
             'user_id' => ['required', 'integer'],
             'trip_id' => ['required', 'integer'],
@@ -220,6 +234,18 @@ class AdminController extends Controller
 
     public function cancelReservation(int $id): void
     {
+        $reservation = (new Reservation())->findDetailed($id);
+
+        if (!$reservation) {
+            flash('error', 'Reservation not found.');
+            $this->redirect('admin/reservations');
+        }
+
+        if (($reservation['status'] ?? '') !== 'active') {
+            flash('error', 'Only active reservations can be cancelled.');
+            $this->redirect('admin/reservations');
+        }
+
         (new Reservation())->cancel($id);
         (new ActivityLogService())->log('admin_reservation_cancelled', 'reservation', $id, 'Admin cancelled reservation.');
         flash('success', 'Reservation cancelled.');

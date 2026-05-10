@@ -61,3 +61,19 @@ function trip_image_url(?string $path): string
     $path = trim((string) $path);
     return $path !== '' ? $path : (string) config('app.default_trip_image');
 }
+
+function url_with_query(string $path, array $updates = []): string
+{
+    $query = array_merge($_GET, $updates);
+    $query = array_filter(
+        $query,
+        static fn (mixed $value): bool => $value !== null && $value !== ''
+    );
+
+    $url = base_url($path);
+    if ($query === []) {
+        return $url;
+    }
+
+    return $url . '?' . http_build_query($query);
+}
