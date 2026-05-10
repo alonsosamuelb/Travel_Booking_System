@@ -1,8 +1,13 @@
 <div class="row g-4">
     <div class="col-lg-8">
         <div class="card card-soft shadow-sm mb-4">
-            <h2 class="section-title h4">My account</h2>
-            <p class="text-muted mb-0">Manage your bookings and profile.</p>
+            <div class="d-flex justify-content-between align-items-center gap-3 flex-wrap">
+                <div>
+                    <h2 class="section-title h4 mb-1">My account</h2>
+                    <p class="text-muted mb-0">Manage your bookings, profile and trips as a driver.</p>
+                </div>
+                <a href="<?= base_url('my-trips') ?>" class="btn btn-primary">Publish a trip</a>
+            </div>
         </div>
         <div class="card card-soft shadow-sm mb-4">
             <div class="d-flex justify-content-between align-items-center mb-3">

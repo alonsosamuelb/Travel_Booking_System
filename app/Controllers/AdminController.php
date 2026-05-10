@@ -147,6 +147,7 @@ class AdminController extends Controller
             'available_seats' => (int) $data['available_seats'],
             'image_path' => $imagePath ?: (string) config('app.default_trip_image'),
             'status' => $data['status'],
+            'creator_user_id' => (int) ($currentTrip['creator_user_id'] ?? 0) ?: null,
         ]);
 
         $savedTrip = $id ? (new Trip())->find($id) : null;
