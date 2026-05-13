@@ -39,10 +39,28 @@ class Database
             $config['charset']
         );
 
-        return new PDO($dsn, $config['username'], $config['password'], [
+        $pdo = new PDO($dsn, $config['username'], $config['password'], [
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
         ]);
+
+        self::applySessionTimezone($pdo);
+
+        return $pdo;
+    }
+
+    private static function applySessionTimezone(PDO $pdo): void
+    {
+        $timezoneName = (string) App::config('app.timezone', 'UTC');
+
+        try {
+            $timezone = new \DateTimeZone($timezoneName);
+            $offset = (new \DateTimeImmutable('now', $timezone))->format('P');
+            $statement = $pdo->prepare('SET time_zone = :time_zone');
+            $statement->execute(['time_zone' => $offset]);
+        } catch (\Throwable) {
+            // Shared hostings can restrict timezone handling. In that case we keep the default session timezone.
+        }
     }
 
     public static function reset(): void

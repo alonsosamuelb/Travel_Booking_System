@@ -25,7 +25,7 @@ class UploadService
             throw new \RuntimeException('Image size must be 2MB or lower.');
         }
 
-        $directory = __DIR__ . '/../../public/uploads/trips';
+        $directory = $this->publicUploadDirectory();
         if (!is_dir($directory) && !mkdir($directory, 0775, true) && !is_dir($directory)) {
             throw new \RuntimeException('Trip upload directory could not be created.');
         }
@@ -38,14 +38,45 @@ class UploadService
             throw new \RuntimeException('Uploaded image could not be stored.');
         }
 
-        if ($currentPath && str_starts_with($currentPath, base_url('uploads/trips/'))) {
-            $oldFile = __DIR__ . '/../../public/uploads/trips/' . basename($currentPath);
+        if ($currentPath && (
+            str_starts_with($currentPath, base_url('uploads/trips/')) ||
+            str_starts_with($currentPath, base_url('assets/uploads/trips/'))
+        )) {
+            $oldFile = $directory . '/' . basename($currentPath);
             if (is_file($oldFile)) {
                 @unlink($oldFile);
             }
         }
 
-        return base_url('uploads/trips/' . $filename);
+        return base_url($this->publicUploadPathPrefix() . '/' . $filename);
+    }
+
+    private function publicUploadDirectory(): string
+    {
+        $rootAssetUploads = realpath(__DIR__ . '/../../assets/uploads/trips');
+        if ($rootAssetUploads !== false) {
+            return $rootAssetUploads;
+        }
+
+        $rootUploads = realpath(__DIR__ . '/../../uploads/trips');
+        if ($rootUploads !== false) {
+            return $rootUploads;
+        }
+
+        if (is_dir(__DIR__ . '/../../assets')) {
+            return __DIR__ . '/../../assets/uploads/trips';
+        }
+
+        return __DIR__ . '/../../public/uploads/trips';
+    }
+
+    private function publicUploadPathPrefix(): string
+    {
+        if (is_dir(__DIR__ . '/../../assets')) {
+            return 'assets/uploads/trips';
+        }
+
+        return 'uploads/trips';
     }
 
     private function optimizeImage(string $source, string $target, string $mime): bool

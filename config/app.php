@@ -4,7 +4,7 @@ use App\Core\Env;
 
 return [
     'name' => Env::get('APP_NAME', 'Travel Booking System'),
-    'base_url' => Env::get('APP_BASE_URL', '/Travel_Booking_System/public'),
+    'base_url' => Env::get('APP_BASE_URL', ''),
     'timezone' => Env::get('APP_TIMEZONE', 'Europe/Madrid'),
     'environment' => Env::get('APP_ENV', 'local'),
     'debug' => Env::get('APP_DEBUG', true),

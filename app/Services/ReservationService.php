@@ -13,9 +13,14 @@ class ReservationService
         $tripModel = new Trip();
         $reservationModel = new Reservation();
         $trip = $tripModel->findWithAvailability((int) $data['trip_id']);
+        $reservationDate = isset($data['reservation_date']) ? strtotime((string) $data['reservation_date']) : false;
 
         if (!$trip) {
             return ['trip_id' => 'Selected trip was not found.'];
+        }
+
+        if ($reservationDate !== false && $reservationDate < time()) {
+            $errors['reservation_date'] = 'Reservation date cannot be earlier than the current date and time.';
         }
 
         if (strtotime($trip['departure_at']) <= time()) {

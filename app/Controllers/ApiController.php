@@ -110,6 +110,10 @@ class ApiController extends Controller
             'status' => ['required', 'in:draft,published'],
         ]);
 
+        if (!empty($data['departure_at']) && strtotime((string) $data['departure_at']) <= time()) {
+            $errors['departure_at'] = 'Trips must have a future departure date and time.';
+        }
+
         if ($errors) {
             $this->json(['message' => 'Validation failed', 'errors' => $errors], 422);
         }
@@ -149,6 +153,10 @@ class ApiController extends Controller
             'available_seats' => ['required', 'integer'],
             'status' => ['required', 'in:draft,published'],
         ]);
+
+        if (!empty($data['departure_at']) && strtotime((string) $data['departure_at']) <= time()) {
+            $errors['departure_at'] = 'Trips must have a future departure date and time.';
+        }
 
         if ($errors) {
             $this->json(['message' => 'Validation failed', 'errors' => $errors], 422);

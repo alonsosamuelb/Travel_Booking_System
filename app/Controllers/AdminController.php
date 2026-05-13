@@ -168,6 +168,10 @@ class AdminController extends Controller
             'status' => ['required', 'in:draft,published'],
         ]);
 
+        if (!empty($data['departure_at']) && strtotime((string) $data['departure_at']) <= time()) {
+            $errors['departure_at'] = 'Trips must have a future departure date and time.';
+        }
+
         if ($errors) {
             $_SESSION['_errors'] = $errors;
             flash('error', 'Trip could not be saved.');
