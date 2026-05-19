@@ -78,16 +78,6 @@ cp .env.example .env
 http://localhost/Travel_Booking_System/public
 ```
 
-## Demo accounts
-
-### Admin
-- Email: `admin@travelbooking.local`
-- Password: `Admin123!`
-
-### User
-- Email: `user@travelbooking.local`
-- Password: `User123!`
-
 ## Additional notes
 
 - The project includes a full database snapshot in `database/schema.sql`
