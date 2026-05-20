@@ -135,6 +135,38 @@ class AdminController extends Controller
         $this->redirect('admin/users');
     }
 
+    public function destroyUser(int $id): void
+    {
+        $userModel = new User();
+        $currentAdmin = Auth::user();
+        $targetUser = $userModel->find($id);
+
+        if (!$targetUser) {
+            flash('error', 'User not found.');
+            $this->redirect('admin/users');
+        }
+
+        if ($currentAdmin && (int) $targetUser['id'] === (int) $currentAdmin['id']) {
+            flash('error', 'You cannot delete your own administrator account.');
+            $this->redirect('admin/users');
+        }
+
+        if ($targetUser['role'] === 'admin' && $targetUser['deleted_at'] === null && $userModel->countActiveAdmins() <= 1) {
+            flash('error', 'At least one active administrator must remain in the system.');
+            $this->redirect('admin/users');
+        }
+
+        if ($userModel->hasReservations($id)) {
+            flash('error', 'This user cannot be deleted because there are linked reservations in the system.');
+            $this->redirect('admin/users');
+        }
+
+        $userModel->hardDelete($id);
+        (new ActivityLogService())->log('admin_user_deleted', 'user', $id, 'Admin deleted user permanently.');
+        flash('success', 'User deleted permanently.');
+        $this->redirect('admin/users');
+    }
+
     public function trips(): void
     {
         $page = max(1, (int) Request::input('page', 1));

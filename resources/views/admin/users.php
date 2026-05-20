@@ -37,6 +37,10 @@ $formUser = $editingUser ?? null;
                                         <?= $user['deleted_at'] ? 'Activate' : 'Deactivate' ?>
                                     </button>
                                 </form>
+                                <form method="POST" action="<?= base_url('admin/users/' . $user['id'] . '/destroy') ?>" class="d-inline" onsubmit="return confirm('This will permanently delete the user if there are no linked reservations. Continue?');">
+                                    <?= csrf_field() ?>
+                                    <button class="btn btn-sm btn-danger">Delete</button>
+                                </form>
                             </td>
                         </tr>
                     <?php endforeach; ?>

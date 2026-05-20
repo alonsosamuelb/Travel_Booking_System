@@ -64,6 +64,7 @@ $router->get('/admin', [AdminController::class, 'index'], $admin);
 $router->get('/admin/users', [AdminController::class, 'users'], $admin);
 $router->post('/admin/users/save', [AdminController::class, 'saveUser'], $admin);
 $router->post('/admin/users/{id}/delete', [AdminController::class, 'deleteUser'], $admin);
+$router->post('/admin/users/{id}/destroy', [AdminController::class, 'destroyUser'], $admin);
 $router->get('/admin/trips', [AdminController::class, 'trips'], $admin);
 $router->post('/admin/trips/save', [AdminController::class, 'saveTrip'], $admin);
 $router->post('/admin/trips/{id}/delete', [AdminController::class, 'deleteTrip'], $admin);

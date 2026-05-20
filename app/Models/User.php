@@ -195,4 +195,17 @@ class User extends Model
 
         return $user ?: null;
     }
+
+    public function hardDelete(int $id): void
+    {
+        $statement = $this->db->prepare('DELETE FROM users WHERE id = :id');
+        $statement->execute(['id' => $id]);
+    }
+
+    public function hasReservations(int $id): bool
+    {
+        $statement = $this->db->prepare('SELECT COUNT(*) FROM reservations WHERE user_id = :id');
+        $statement->execute(['id' => $id]);
+        return (int) $statement->fetchColumn() > 0;
+    }
 }
