@@ -202,10 +202,16 @@ class User extends Model
         $statement->execute(['id' => $id]);
     }
 
-    public function hasReservations(int $id): bool
+    public function hasActiveReservations(int $id): bool
     {
-        $statement = $this->db->prepare('SELECT COUNT(*) FROM reservations WHERE user_id = :id');
+        $statement = $this->db->prepare('SELECT COUNT(*) FROM reservations WHERE user_id = :id AND status = "active"');
         $statement->execute(['id' => $id]);
         return (int) $statement->fetchColumn() > 0;
+    }
+
+    public function deleteNonActiveReservations(int $id): void
+    {
+        $statement = $this->db->prepare('DELETE FROM reservations WHERE user_id = :id AND status != "active"');
+        $statement->execute(['id' => $id]);
     }
 }

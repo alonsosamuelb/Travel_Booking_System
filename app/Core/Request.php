@@ -60,6 +60,10 @@ class Request
         $base = rtrim((string) config('app.base_url'), '/');
         if ($base && str_starts_with($uri, $base)) {
             $uri = substr($uri, strlen($base)) ?: '/';
+        } elseif (str_starts_with($uri, '/public/')) {
+            $uri = substr($uri, strlen('/public')) ?: '/';
+        } elseif ($uri === '/public') {
+            $uri = '/';
         }
 
         return str_starts_with($uri, '/api/');

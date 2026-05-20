@@ -156,11 +156,12 @@ class AdminController extends Controller
             $this->redirect('admin/users');
         }
 
-        if ($userModel->hasReservations($id)) {
-            flash('error', 'This user cannot be deleted because there are linked reservations in the system.');
+        if ($userModel->hasActiveReservations($id)) {
+            flash('error', 'This user cannot be deleted because there are active reservations linked to the account.');
             $this->redirect('admin/users');
         }
 
+        $userModel->deleteNonActiveReservations($id);
         $userModel->hardDelete($id);
         (new ActivityLogService())->log('admin_user_deleted', 'user', $id, 'Admin deleted user permanently.');
         flash('success', 'User deleted permanently.');
